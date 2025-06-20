@@ -223,7 +223,7 @@ export default function DashboardPage() {
         
         if (response.ok) {
           const data = await response.json()
-          setShippingInfo(data)
+          setShippingInfo(data.shippingInfo)
         } else {
           console.error('Failed to fetch shipping info')
         }
