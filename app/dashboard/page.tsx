@@ -1027,10 +1027,10 @@ export default function DashboardPage() {
                       <p className="text-sm text-gray-600 dark:text-gray-400">Email</p>
                       <p className="font-medium">{selectedOrder.userEmail}</p>
                     </div>
-                    {shippingInfo?.shipping?.phone && shippingInfo.shipping.phone !== 'N/A' && (
+                    {shippingInfo?.phone && shippingInfo.phone !== 'N/A' && (
                       <div>
                         <p className="text-sm text-gray-600 dark:text-gray-400">Phone</p>
-                        <p className="font-medium">{shippingInfo.shipping.phone}</p>
+                        <p className="font-medium">{shippingInfo.phone}</p>
                       </div>
                     )}
                   </div>
@@ -1072,29 +1072,29 @@ export default function DashboardPage() {
                       <p className="text-sm text-gray-600 dark:text-gray-400">Loading shipping details...</p>
                     </div>
                   </div>
-                ) : shippingInfo?.formattedAddress ? (
+                ) : shippingInfo ? (
                   <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                     <div className="flex items-start space-x-3">
                       <MapPin className="h-5 w-5 text-gray-500 mt-0.5" />
                       <div className="flex-1">
-                        <p className="font-medium">{shippingInfo.shipping.name}</p>
+                        <p className="font-medium">{shippingInfo.name}</p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {shippingInfo.formattedAddress.line1}
-                          {shippingInfo.formattedAddress.line2 && <br />}
-                          {shippingInfo.formattedAddress.line2}
+                          {shippingInfo.address.line1}
+                          {shippingInfo.address.line2 && <br />}
+                          {shippingInfo.address.line2}
                           <br />
-                          {shippingInfo.formattedAddress.city}, {shippingInfo.formattedAddress.state} {shippingInfo.formattedAddress.postal_code}
+                          {shippingInfo.address.city}, {shippingInfo.address.state} {shippingInfo.address.postal_code}
                           <br />
-                          {shippingInfo.formattedAddress.country}
+                          {shippingInfo.address.country}
                         </p>
-                        {shippingInfo.shipping.phone !== 'N/A' && (
+                        {shippingInfo.phone && shippingInfo.phone !== 'N/A' && (
                           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                            📞 {shippingInfo.shipping.phone}
+                            📞 {shippingInfo.phone}
                           </p>
                         )}
-                        {shippingInfo.shipping.email !== 'N/A' && (
+                        {shippingInfo.email && shippingInfo.email !== 'N/A' && (
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            ✉️ {shippingInfo.shipping.email}
+                            ✉️ {shippingInfo.email}
                           </p>
                         )}
                       </div>
@@ -1171,7 +1171,7 @@ export default function DashboardPage() {
                     </Button>
                   </div>
                   
-                  {shippingInfo?.shipping?.phone && shippingInfo.shipping.phone !== 'N/A' && (
+                  {shippingInfo?.phone && shippingInfo.phone !== 'N/A' && (
                     <div className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
@@ -1179,10 +1179,10 @@ export default function DashboardPage() {
                         </div>
                         <div>
                           <p className="font-medium">Call Customer</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">Call {shippingInfo.shipping.phone}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">Call {shippingInfo.phone}</p>
                         </div>
                       </div>
-                      <Button variant="outline" size="sm" onClick={() => window.open(`tel:${shippingInfo.shipping.phone}`, '_blank')}>
+                      <Button variant="outline" size="sm" onClick={() => window.open(`tel:${shippingInfo.phone}`, '_blank')}>
                         Call Now
                       </Button>
                     </div>
@@ -1199,7 +1199,7 @@ export default function DashboardPage() {
                       </div>
                     </div>
                     <Button variant="outline" size="sm" onClick={() => {
-                      const phone = shippingInfo?.shipping?.phone || 'N/A'
+                      const phone = shippingInfo?.phone || 'N/A'
                       if (phone !== 'N/A') {
                         window.open(`sms:${phone}?body=Hi ${selectedOrder.userName}, regarding your order ${selectedOrder.id}`, '_blank')
                       } else {

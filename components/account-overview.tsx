@@ -442,49 +442,31 @@ export function AccountOverview() {
                       <p className="text-sm text-gray-600 dark:text-gray-400">Loading shipping details...</p>
                     </div>
                   </div>
-                ) : shippingInfo?.formattedAddress ? (
+                ) : shippingInfo ? (
                   <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                     <div className="flex items-start space-x-3">
                       <MapPin className="h-5 w-5 text-gray-500 mt-0.5" />
                       <div className="flex-1">
-                        <p className="font-medium">{shippingInfo.shipping.name}</p>
+                        <p className="font-medium">{shippingInfo.name}</p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {shippingInfo.formattedAddress.line1}
-                          {shippingInfo.formattedAddress.line2 && <br />}
-                          {shippingInfo.formattedAddress.line2}
+                          {shippingInfo.address.line1}
+                          {shippingInfo.address.line2 && <br />}
+                          {shippingInfo.address.line2}
                           <br />
-                          {shippingInfo.formattedAddress.city}, {shippingInfo.formattedAddress.state} {shippingInfo.formattedAddress.postal_code}
+                          {shippingInfo.address.city}, {shippingInfo.address.state} {shippingInfo.address.postal_code}
                           <br />
-                          {shippingInfo.formattedAddress.country}
+                          {shippingInfo.address.country}
                         </p>
-                        {shippingInfo.shipping.phone !== 'N/A' && (
+                        {shippingInfo.phone && shippingInfo.phone !== 'N/A' && (
                           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                            📞 {shippingInfo.shipping.phone}
+                            📞 {shippingInfo.phone}
                           </p>
                         )}
-                        {shippingInfo.shipping.email !== 'N/A' && (
+                        {shippingInfo.email && shippingInfo.email !== 'N/A' && (
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            ✉️ {shippingInfo.shipping.email}
+                            ✉️ {shippingInfo.email}
                           </p>
                         )}
-                      </div>
-                    </div>
-                  </div>
-                ) : shippingInfo?.rawSession ? (
-                  <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-                    <div className="flex items-start space-x-3">
-                      <MapPin className="h-5 w-5 text-gray-500 mt-0.5" />
-                      <div className="flex-1">
-                        <p className="font-medium">Debug: Raw Session Data Available</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          Check console for detailed shipping information
-                        </p>
-                        <details className="mt-2">
-                          <summary className="cursor-pointer text-xs text-blue-600">View Raw Data</summary>
-                          <pre className="text-xs mt-2 bg-gray-100 p-2 rounded overflow-auto max-h-32">
-                            {JSON.stringify(shippingInfo.rawSession, null, 2)}
-                          </pre>
-                        </details>
                       </div>
                     </div>
                   </div>
