@@ -1,0 +1,2 @@
+run through cursor make type C cable and desk organizer photo fit correctly tie postgreSQL into it just to say its in there, I think it is
+then deploy to github and vercel
