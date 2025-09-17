@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server"
-import { verifyJwt } from "@/lib/jwt"
+import { verifyJwtEdge } from "@/lib/jwt-edge"
 
 // Public routes that don't require authentication
 const PUBLIC_ROUTES = [
@@ -14,7 +14,7 @@ const PUBLIC_ROUTES = [
 	"/api/auth/logout",
 ]
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl
 
 	// Allow public routes
@@ -28,7 +28,7 @@ export function middleware(request: NextRequest) {
 	let role: string | null = null
 
 	if (authCookie && jwtSecret) {
-		const result = verifyJwt(authCookie, jwtSecret)
+		const result = await verifyJwtEdge(authCookie, jwtSecret)
 		if (result.valid && result.payload) {
 			role = result.payload.role
 		} else {

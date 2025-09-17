@@ -1,4 +1,4 @@
-import crypto from "node:crypto"
+import crypto from "crypto"
 
 function base64url(input: Buffer | string) {
 	const buf = Buffer.isBuffer(input) ? input : Buffer.from(input)
