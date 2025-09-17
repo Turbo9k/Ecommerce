@@ -4,12 +4,27 @@ import { signJwt } from "@/lib/jwt"
 
 export async function POST(request: NextRequest) {
 	try {
-		const { email, password } = await request.json()
+		const body = await request.json()
+		let email = (body?.email || "").toString().trim()
+		let password = (body?.password || "").toString().trim()
 		if (!email || !password) {
 			return NextResponse.json({ error: "Email and password required" }, { status: 400 })
 		}
 
-		const user = userStorage.validateCredentials(email, password)
+		let user = userStorage.validateCredentials(email, password)
+
+		// Fallback for server-side (no localStorage) with demo accounts
+		if (!user) {
+			const demoUsers = [
+				{ id: "1", email: "admin@example.com", name: "Admin User", role: "admin", password: "password" },
+				{ id: "2", email: "customer@example.com", name: "Customer User", role: "customer", password: "password" },
+			]
+			const match = demoUsers.find((u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password)
+			if (match) {
+				user = { id: match.id, email: match.email, name: match.name, role: match.role, password: match.password } as any
+			}
+		}
+
 		if (!user) {
 			return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
 		}
