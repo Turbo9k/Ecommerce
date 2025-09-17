@@ -4,10 +4,11 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { ShoppingCart, LogOut, Store, Sparkles } from "lucide-react"
+import { ShoppingCart, LogOut, Store, Sparkles, Menu } from "lucide-react"
 import { DarkModeToggle } from "@/components/dark-mode-toggle"
 import { LucideUser } from "lucide-react"
 import { useCart } from "@/hooks/use-cart"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 interface User {
   id: string
@@ -99,13 +100,18 @@ export function Navigation() {
             <div className="flex items-center space-x-4">
               <Link
                 href="/products"
-                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-300 font-medium transition-colors duration-200 relative group"
+                className="hidden sm:inline text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-300 font-medium transition-colors duration-200 relative group"
               >
                 Products
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
               </Link>
               <DarkModeToggle />
-              <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-8 w-20 rounded-full"></div>
+              <div className="sm:hidden">
+                <Button variant="outline" size="icon" className="h-9 w-9">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </div>
+              <div className="hidden sm:block animate-pulse bg-gray-200 dark:bg-gray-700 h-8 w-20 rounded-full"></div>
             </div>
           </div>
         </div>
@@ -132,10 +138,10 @@ export function Navigation() {
             </Link>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3 sm:space-x-4">
             <Link
               href="/products"
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-300 font-medium transition-colors duration-200 relative group"
+              className="hidden sm:inline text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-300 font-medium transition-colors duration-200 relative group"
             >
               Products
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
@@ -144,9 +150,9 @@ export function Navigation() {
             <DarkModeToggle />
 
             {isLoading ? (
-              <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-8 w-20 rounded-full"></div>
-            ) : user ? (
-              <div className="flex items-center space-x-4">
+              <div className="hidden sm:block animate-pulse bg-gray-200 dark:bg-gray-700 h-8 w-20 rounded-full"></div>
+            ) : (
+              <>
                 <Link
                   href="/cart"
                   className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200 relative group"
@@ -158,49 +164,104 @@ export function Navigation() {
                     </span>
                   )}
                 </Link>
-                {user.role === "admin" && (
-                  <Link
-                    href="/dashboard"
-                    className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200"
-                  >
-                    <LucideUser className="h-5 w-5 hover:scale-110 transition-transform duration-200" />
-                  </Link>
-                )}
-                <Link
-                  href="/account"
-                  className="text-lg font-semibold text-gray-800 dark:text-gray-200 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200 cursor-pointer"
-                >
-                  Hi, {user.name}
-                </Link>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={logout}
-                  className="flex items-center space-x-1 hover:bg-red-50 hover:border-red-200 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:border-red-800 dark:hover:text-red-400 transition-all duration-200"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span>Sign Out</span>
-                </Button>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-2">
-                <Link href="/login">
-                  <Button
-                    size="sm"
-                    className="bg-white text-gray-900 hover:bg-gray-100 border border-gray-300 shadow-sm dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800 dark:border-gray-600 transition-all duration-200 hover:scale-105"
-                  >
-                    Sign In
-                  </Button>
-                </Link>
-                <Link href="/register">
-                  <Button
-                    size="sm"
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 transition-all duration-200 hover:scale-105 hover:shadow-xl"
-                  >
-                    Sign Up
-                  </Button>
-                </Link>
-              </div>
+
+                <div className="hidden sm:flex items-center space-x-3 sm:space-x-4">
+                  {user?.role === "admin" && (
+                    <Link
+                      href="/dashboard"
+                      className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200"
+                    >
+                      <LucideUser className="h-5 w-5 hover:scale-110 transition-transform duration-200" />
+                    </Link>
+                  )}
+                  {user ? (
+                    <>
+                      <Link
+                        href="/account"
+                        className="hidden xs:inline text-lg font-semibold text-gray-800 dark:text-gray-200 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200 cursor-pointer"
+                      >
+                        Hi, {user.name}
+                      </Link>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={logout}
+                        className="flex items-center space-x-1 hover:bg-red-50 hover:border-red-200 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:border-red-800 dark:hover:text-red-400 transition-all duration-200"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        <span className="hidden sm:inline">Sign Out</span>
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Link href="/login">
+                        <Button
+                          size="sm"
+                          className="hidden sm:inline bg-white text-gray-900 hover:bg-gray-100 border border-gray-300 shadow-sm dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800 dark:border-gray-600 transition-all duration-200 hover:scale-105"
+                        >
+                          Sign In
+                        </Button>
+                      </Link>
+                      <Link href="/register">
+                        <Button
+                          size="sm"
+                          className="hidden sm:inline bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 transition-all duration-200 hover:scale-105 hover:shadow-xl"
+                        >
+                          Sign Up
+                        </Button>
+                      </Link>
+                    </>
+                  )}
+                </div>
+
+                {/* Mobile hamburger */}
+                <div className="sm:hidden">
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <Button variant="outline" size="icon" className="h-9 w-9">
+                        <Menu className="h-5 w-5" />
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent side="right" className="p-0">
+                      <div className="p-4 space-y-4">
+                        <Link href="/products" className="block text-base font-medium text-gray-800 dark:text-gray-200">
+                          Products
+                        </Link>
+                        <Link href="/cart" className="block text-base font-medium text-gray-800 dark:text-gray-200">
+                          Cart {itemCount > 0 ? `(${itemCount})` : ""}
+                        </Link>
+                        {user?.role === "admin" && (
+                          <Link href="/dashboard" className="block text-base font-medium text-gray-800 dark:text-gray-200">
+                            Dashboard
+                          </Link>
+                        )}
+                        {user ? (
+                          <>
+                            <Link href="/account" className="block text-base font-medium text-gray-800 dark:text-gray-200">
+                              Account
+                            </Link>
+                            <Button variant="outline" className="w-full justify-start" onClick={logout}>
+                              <LogOut className="h-4 w-4 mr-2" /> Sign Out
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Link href="/login">
+                              <Button variant="outline" className="w-full justify-start">Sign In</Button>
+                            </Link>
+                            <Link href="/register">
+                              <Button className="w-full justify-start">Sign Up</Button>
+                            </Link>
+                          </>
+                        )}
+                        <div className="pt-2">
+                          <DarkModeToggle />
+                        </div>
+                      </div>
+                    </SheetContent>
+                  </Sheet>
+                </div>
+              </>
             )}
           </div>
         </div>

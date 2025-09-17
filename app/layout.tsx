@@ -15,6 +15,13 @@ export const metadata: Metadata = {
     generator: 'v0.dev'
 }
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -23,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <ThemeProvider defaultTheme="system" storageKey="ecommerce-theme">
           <AuthProvider>
             <Navigation />
             <main className="min-h-screen">{children}</main>

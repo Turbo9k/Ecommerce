@@ -177,6 +177,10 @@ export default function DashboardPage() {
         return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
       case "cancelled":
         return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+      case "returned":
+        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
+      case "refunded":
+        return "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200"
       default:
         return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
     }
@@ -194,6 +198,10 @@ export default function DashboardPage() {
         return <AlertCircle className="h-4 w-4" />
       case "cancelled":
         return <XCircle className="h-4 w-4" />
+      case "returned":
+        return <XCircle className="h-4 w-4" />
+      case "refunded":
+        return <CheckCircle className="h-4 w-4" />
       default:
         return <Clock className="h-4 w-4" />
     }

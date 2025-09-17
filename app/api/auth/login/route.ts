@@ -1,0 +1,44 @@
+import { NextRequest, NextResponse } from "next/server"
+import { userStorage } from "@/lib/user-storage"
+import { signJwt } from "@/lib/jwt"
+
+export async function POST(request: NextRequest) {
+	try {
+		const { email, password } = await request.json()
+		if (!email || !password) {
+			return NextResponse.json({ error: "Email and password required" }, { status: 400 })
+		}
+
+		const user = userStorage.validateCredentials(email, password)
+		if (!user) {
+			return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
+		}
+
+		const jwtSecret = process.env.JWT_SECRET
+		if (!jwtSecret) {
+			return NextResponse.json({ error: "Server not configured (JWT_SECRET)" }, { status: 500 })
+		}
+
+		const token = signJwt({ sub: user.id, role: user.role, email: user.email, name: user.name }, jwtSecret, 60 * 60 * 24)
+
+		const res = NextResponse.json({ success: true })
+		res.cookies.set("auth", token, {
+			httpOnly: true,
+			secure: true,
+			sameSite: "lax",
+			path: "/",
+			maxAge: 60 * 60 * 24,
+		})
+		// Optional: convenience cookie with minimal public data
+		res.cookies.set("user", JSON.stringify({ id: user.id, role: user.role, email: user.email, name: user.name }), {
+			httpOnly: false,
+			secure: true,
+			sameSite: "lax",
+			path: "/",
+			maxAge: 60 * 60 * 24,
+		})
+		return res
+	} catch (e: any) {
+		return NextResponse.json({ error: "Login failed", details: e.message }, { status: 500 })
+	}
+} 

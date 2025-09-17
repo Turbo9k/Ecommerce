@@ -28,33 +28,38 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      const success = await login(email, password)
-      if (success) {
-        // Dispatch custom event to notify Navigation component
-        window.dispatchEvent(new Event("authChange"))
-        
-        // Small delay to ensure user state is properly set
-        setTimeout(() => {
-          // Get the user from localStorage to check their role
-          const storedUser = localStorage.getItem("user")
-          if (storedUser) {
-            const user = JSON.parse(storedUser)
-            // Redirect based on user role
-            if (user.role === "admin") {
-              router.push("/dashboard")
-            } else {
-              router.push("/account")
-            }
+      // Call API to issue JWT cookie and convenience user cookie
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || "Invalid email or password")
+      }
+
+      // Mirror to localStorage for existing components depending on it
+      const userCookie = document.cookie.split("; ").find((row) => row.startsWith("user="))
+      if (userCookie) {
+        try {
+          const raw = decodeURIComponent(userCookie.split("=")[1])
+          localStorage.setItem("user", raw)
+          window.dispatchEvent(new Event("authChange"))
+          const user = JSON.parse(raw)
+          if (user.role === "admin") {
+            router.push("/dashboard")
           } else {
-            // Fallback to account page if user data is not available
             router.push("/account")
           }
-        }, 100)
+        } catch {
+          router.push("/account")
+        }
       } else {
-        setError("Invalid email or password")
+        router.push("/account")
       }
-    } catch (err) {
-      setError("An error occurred during login")
+    } catch (err: any) {
+      setError(err.message || "An error occurred during login")
     } finally {
       setIsLoading(false)
     }

@@ -13,7 +13,7 @@ interface Order {
   userName: string
   items: OrderItem[]
   total: number
-  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled"
+  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled" | "returned" | "refunded"
   createdAt: string
   updatedAt: string
   shippingAddress?: {

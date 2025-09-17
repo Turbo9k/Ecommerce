@@ -42,6 +42,8 @@ class CartStoreImpl implements CartStore {
         if (stored) {
           this.items = JSON.parse(stored)
         }
+        // Ensure any current subscribers get the loaded state
+        this.notifyListeners()
       } catch (error) {
         console.error("Error loading cart from storage:", error)
         this.items = []
@@ -66,6 +68,8 @@ class CartStoreImpl implements CartStore {
 
   subscribe(listener: () => void) {
     this.listeners.push(listener)
+    // Immediately sync the subscriber with the current state
+    listener()
     return () => {
       this.listeners = this.listeners.filter((l) => l !== listener)
     }
