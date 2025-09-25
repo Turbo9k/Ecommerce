@@ -31,7 +31,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Check for stored user session
     try {
-      const storedUser = localStorage.getItem("user")
+      let storedUser = localStorage.getItem("user")
+      // Fallback to cookie if localStorage missing
+      if (!storedUser && typeof document !== "undefined") {
+        const cookiePair = document.cookie.split("; ").find((row) => row.startsWith("user="))
+        if (cookiePair) {
+          storedUser = decodeURIComponent(cookiePair.split("=")[1])
+          // Mirror into localStorage for consistency
+          localStorage.setItem("user", storedUser)
+        }
+      }
       if (storedUser) {
         const parsedUser = JSON.parse(storedUser)
         setUser(parsedUser)
