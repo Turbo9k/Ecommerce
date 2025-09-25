@@ -34,11 +34,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       let storedUser = localStorage.getItem("user")
       // Fallback to cookie if localStorage missing
       if (!storedUser && typeof document !== "undefined") {
-        const cookiePair = document.cookie.split("; ").find((row) => row.startsWith("user="))
-        if (cookiePair) {
-          storedUser = decodeURIComponent(cookiePair.split("=")[1])
-          // Mirror into localStorage for consistency
+        const cookieUser = document.cookie.split("; ").find((row) => row.startsWith("user="))
+        if (cookieUser) {
+          storedUser = decodeURIComponent(cookieUser.split("=")[1])
           localStorage.setItem("user", storedUser)
+        } else {
+          // Fallback to decode JWT payload from auth cookie
+          const cookieAuth = document.cookie.split("; ").find((row) => row.startsWith("auth="))
+          if (cookieAuth) {
+            const raw = cookieAuth.split("=")[1]
+            const parts = raw.split(".")
+            if (parts.length === 3) {
+              try {
+                const payload = JSON.parse(atob(parts[1].replace(/-/g, "+").replace(/_/g, "/")))
+                const jwtUser = {
+                  id: payload.sub as string,
+                  email: payload.email as string,
+                  name: (payload.name as string) || "",
+                  role: (payload.role as string) || "customer",
+                }
+                storedUser = JSON.stringify(jwtUser)
+                localStorage.setItem("user", storedUser)
+              } catch {}
+            }
+          }
         }
       }
       if (storedUser) {
@@ -82,18 +101,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     name: string,
   ): Promise<{ success: boolean; error?: string }> => {
     try {
-      // Check if user already exists
       const existingUser = userStorage.getUserByEmail(email)
       if (existingUser) {
         return { success: false, error: "User with this email already exists" }
       }
 
-      // Create new user
-      const newUser = userStorage.createUser({
+      userStorage.createUser({
         email,
         password,
         name,
-        role: "customer", // Default role for new registrations
+        role: "customer",
       })
 
       return { success: true }
