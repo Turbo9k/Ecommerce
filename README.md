@@ -13,7 +13,7 @@ A full-featured e-commerce web application supporting secure payments, inventory
 ![Stripe Checkout](./screenshots/ecomstripe.png)
 
 ### Admin Dashboard
-![Admin Dashboard](./screenshots/ecomadmin.png)
+![Admin Dashboard](./screenshots/ecomadmin.PNG)
 
 ## 🚀 Live Demo
 https://ecommerce-store-mu-five.vercel.app
