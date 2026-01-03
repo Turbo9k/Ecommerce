@@ -6,10 +6,10 @@ A full-featured e-commerce web application supporting secure payments, inventory
 
 ### Product Browsing & Details
 ![Product Layout](./screenshots/ecomproductlayout.png)
-![Product Details](./screenshots/item.png)
+![Product Details](./screenshots/item.PNG)
 
 ### Cart & Checkout
-![Cart](./screenshots/ecomcart.png)
+![Cart](./screenshots/ecomcart.PNG)
 ![Stripe Checkout](./screenshots/ecomstripe.png)
 
 ### Admin Dashboard
