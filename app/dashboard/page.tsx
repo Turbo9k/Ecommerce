@@ -49,7 +49,7 @@ interface Product {
 }
 
 export default function DashboardPage() {
-  const { user } = useAuth()
+  const { user, isLoading } = useAuth()
   const { products, addProduct, updateProduct, deleteProduct } = useProducts()
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
@@ -99,6 +99,20 @@ export default function DashboardPage() {
     return unsubscribe
   }, [])
 
+  // Show loading state while auth is being checked
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <Card className="w-full max-w-md">
+          <CardContent className="text-center p-6">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   if (!user || user.role !== "admin") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
@@ -106,6 +120,11 @@ export default function DashboardPage() {
           <CardContent className="text-center p-6">
             <h2 className="text-xl font-semibold text-red-600 mb-2">Access Denied</h2>
             <p className="text-gray-600 dark:text-gray-400">You need admin privileges to access this page.</p>
+            {user && (
+              <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
+                Current role: {user.role}
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>

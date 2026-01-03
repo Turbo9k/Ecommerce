@@ -39,23 +39,59 @@ export default function LoginPage() {
         throw new Error(data.error || "Invalid email or password")
       }
 
+      // Wait a moment for cookies to be set by the server
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
       // Mirror to localStorage for existing components depending on it
       const userCookie = document.cookie.split("; ").find((row) => row.startsWith("user="))
       if (userCookie) {
         try {
           const raw = decodeURIComponent(userCookie.split("=")[1])
+          const user = JSON.parse(raw)
           localStorage.setItem("user", raw)
           window.dispatchEvent(new Event("authChange"))
-          const user = JSON.parse(raw)
+          
+          // Small delay to ensure auth context updates
+          await new Promise(resolve => setTimeout(resolve, 50))
+          
           if (user.role === "admin") {
             router.push("/dashboard")
           } else {
             router.push("/account")
           }
-        } catch {
+        } catch (e) {
+          console.error("Error parsing user cookie:", e)
           router.push("/account")
         }
       } else {
+        // Try to decode from JWT auth cookie as fallback
+        const authCookie = document.cookie.split("; ").find((row) => row.startsWith("auth="))
+        if (authCookie) {
+          try {
+            const raw = authCookie.split("=")[1]
+            const parts = raw.split(".")
+            if (parts.length === 3) {
+              const payload = JSON.parse(atob(parts[1].replace(/-/g, "+").replace(/_/g, "/")))
+              const user = {
+                id: payload.sub,
+                email: payload.email,
+                name: payload.name || "",
+                role: payload.role || "customer",
+              }
+              localStorage.setItem("user", JSON.stringify(user))
+              window.dispatchEvent(new Event("authChange"))
+              await new Promise(resolve => setTimeout(resolve, 50))
+              if (user.role === "admin") {
+                router.push("/dashboard")
+              } else {
+                router.push("/account")
+              }
+              return
+            }
+          } catch (e) {
+            console.error("Error decoding JWT:", e)
+          }
+        }
         router.push("/account")
       }
     } catch (err: any) {

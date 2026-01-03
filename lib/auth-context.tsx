@@ -26,18 +26,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => {
-    setMounted(true)
-
-    // Check for stored user session
+  const loadUser = () => {
     try {
       let storedUser = localStorage.getItem("user")
       // Fallback to cookie if localStorage missing
       if (!storedUser && typeof document !== "undefined") {
         const cookieUser = document.cookie.split("; ").find((row) => row.startsWith("user="))
         if (cookieUser) {
-          storedUser = decodeURIComponent(cookieUser.split("=")[1])
-          localStorage.setItem("user", storedUser)
+          try {
+            storedUser = decodeURIComponent(cookieUser.split("=")[1])
+            localStorage.setItem("user", storedUser)
+          } catch (e) {
+            console.error("Error decoding user cookie:", e)
+          }
         } else {
           // Fallback to decode JWT payload from auth cookie
           const cookieAuth = document.cookie.split("; ").find((row) => row.startsWith("auth="))
@@ -55,7 +56,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 }
                 storedUser = JSON.stringify(jwtUser)
                 localStorage.setItem("user", storedUser)
-              } catch {}
+              } catch (e) {
+                console.error("Error decoding JWT:", e)
+              }
             }
           }
         }
@@ -63,13 +66,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (storedUser) {
         const parsedUser = JSON.parse(storedUser)
         setUser(parsedUser)
+      } else {
+        setUser(null)
       }
     } catch (error) {
       console.error("Error parsing stored user:", error)
       localStorage.removeItem("user")
+      setUser(null)
     }
+  }
 
+  useEffect(() => {
+    setMounted(true)
+    loadUser()
     setIsLoading(false)
+
+    // Listen for auth changes (e.g., after login)
+    const handleAuthChange = () => {
+      loadUser()
+    }
+    window.addEventListener("authChange", handleAuthChange)
+    
+    // Also check periodically for cookie changes (in case cookies are set by server)
+    // Check less frequently to avoid performance issues
+    const interval = setInterval(() => {
+      const cookieUser = document.cookie.split("; ").find((row) => row.startsWith("user="))
+      if (cookieUser) {
+        try {
+          const cookieValue = decodeURIComponent(cookieUser.split("=")[1])
+          const currentUser = localStorage.getItem("user")
+          if (!currentUser || currentUser !== cookieValue) {
+            loadUser()
+          }
+        } catch (e) {
+          // Cookie might be malformed, ignore
+        }
+      } else if (localStorage.getItem("user")) {
+        // Cookie was removed but localStorage still has user - clear it
+        localStorage.removeItem("user")
+        setUser(null)
+      }
+    }, 2000)
+
+    return () => {
+      window.removeEventListener("authChange", handleAuthChange)
+      clearInterval(interval)
+    }
   }, [])
 
   const login = async (email: string, password: string): Promise<boolean> => {
