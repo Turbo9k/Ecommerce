@@ -2,6 +2,19 @@
 
 A full-featured e-commerce web application supporting secure payments, inventory management, and admin order tracking.
 
+## Screenshots
+
+### Product Browsing & Details
+![Product Layout](./screenshots/ecomproductlayout.png)
+![Product Details](./screenshots/item.png)
+
+### Cart & Checkout
+![Cart](./screenshots/ecomcart.png)
+![Stripe Checkout](./screenshots/ecomstripe.png)
+
+### Admin Dashboard
+![Admin Dashboard](./screenshots/ecomadmin.png)
+
 ## 🚀 Live Demo
 https://ecommerce-store-mu-five.vercel.app
 
